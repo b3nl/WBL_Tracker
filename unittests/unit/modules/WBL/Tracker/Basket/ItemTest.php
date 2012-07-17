@@ -201,7 +201,7 @@
 			$this->oFixture->setUsedWBLCatId($sCatId = uniqid());
 
 			$oClass = unserialize(serialize($this->oFixture));
-			$this->assertSame($sCatId, $oClass->getUsedWBLCatId());
+			$this->assertSame($sCatId, $this->oFixture->getUsedWBLCatId());
 			unset($oClass);
 		} // function
 

@@ -37,14 +37,19 @@
 				$fVat += $fVatPosSum;
 			} // foreach
 
-			return $this->addCall(array(
+			$aValues = array(
 				'trackEcommerceOrder',
 				$this->getConfig()->getShopId() . '_' . $oOrder->oxorder__oxordernr->value,
 				$oOrder->oxorder__oxtotalordersum->value,
 				$oOrder->oxorder__oxtotalnetsum->value,
 				$fVat,
-				$oOrder->oxorder__oxdelcost->value, // (optional) Shipping amount
-				(bool) ($oOrder->oxorder__oxdiscount->value + $oOrder->oxorder__oxvoucherdiscount->value)
-			));
+				$oOrder->oxorder__oxdelcost->value
+			);
+
+			$aValues[] = ($fDisc = $oOrder->oxorder__oxdiscount->value + $oOrder->oxorder__oxvoucherdiscount->value)
+				? $fDisc
+				: false;
+
+			return $this->addCall($aValues);
 		} // function
 	} // class
