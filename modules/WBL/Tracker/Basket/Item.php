@@ -34,7 +34,7 @@
 		 * @see http/core/oxBasketItem::__sleep()
 		 */
 		public function __sleep() {
-			return array_merge(array('sUsedWBLCatId'), parent::__sleep());
+			return array_merge(array('_sUsedWBLCatId'), parent::__sleep());
 		} // function
 
 		/**
