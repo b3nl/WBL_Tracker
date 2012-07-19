@@ -24,7 +24,8 @@
 			array('name' => 'aWBLTrackerPiwikPageVars',    'type' => 'aarr', 'value' => array(
 				1 => 'searchhits|WBL_Tracker_Conditions_Value_Search_Hits||search',
 				'searchquery|WBL_Tracker_Conditions_Value_Search_Query||search',
-				4 => 'orderpayment|WBL_Tracker_Conditions_Value_OrderPayment||thankyou'
+				4 => 'orderpayment|WBL_Tracker_Conditions_Value_OrderPayment||thankyou',
+				'possiblepayments|WBL_Tracker_Conditions_Value_Search_PossiblePayments||payment',
 			)),
 			array('name' => 'aWBLTrackerPiwikVisitVars',   'type' => 'aarr', 'value' => array(
 				3 => 'userstatus|WBL_Tracker_Conditions_Value_UserStatus'

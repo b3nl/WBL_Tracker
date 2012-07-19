@@ -1040,7 +1040,8 @@
 					array('group' => 'WBL_Tracker_Piwik', 'name' => 'aWBLTrackerPiwikPageVars',    'type' => 'aarr',  'value' => array(
 						1 => 'searchhits|WBL_Tracker_Conditions_Value_Search_Hits||search',
 						2 => 'searchquery|WBL_Tracker_Conditions_Value_Search_Query||search',
-						4 => 'orderpayment|WBL_Tracker_Conditions_Value_OrderPayment||thankyou'
+						4 => 'orderpayment|WBL_Tracker_Conditions_Value_OrderPayment||thankyou',
+						5 => 'possiblepayments|WBL_Tracker_Conditions_Value_Search_PossiblePayments||payment'
 					)),
 					array('group' => 'WBL_Tracker_Piwik', 'name' => 'aWBLTrackerPiwikVisitVars',   'type' => 'aarr',  'value' => array(
 						3 => 'userstatus|WBL_Tracker_Conditions_Value_UserStatus'

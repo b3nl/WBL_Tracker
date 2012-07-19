@@ -1,6 +1,6 @@
 <?php
 	/**
-	 * ./unit/modules/WBL/Tracker/Conditions/Value/OrderPAymentTest.php
+	 * ./unit/modules/WBL/Tracker/Conditions/Value/OrderPaymentTest.php
 	 * @author blange <b.lange@wbl-konzept.de>
 	 * @category unittests
 	 * @package WBL_Tracker
