@@ -528,6 +528,31 @@
 		} // function
 
 		/**
+		 * Checks if the helper is called correctly.
+		 * @author blange <code@wbl-konzept.de>
+		 * @return void
+		 */
+		public function testIsPriceOnDetailsPageAllowed() {
+			$this->oFixture = $this->getProxyClass(get_class($this->oFixture));
+
+			oxTestModules::addModuleObject(
+				strtolower('WBL_Tracker_Helper_Rights'),
+				$oObject = $this->getMock('WBL_Tracker_Helper_Rights', array('hasRight'))
+			);
+
+			$oObject
+				->expects($this->once())
+				->method('hasRight')
+				->with('SHOWARTICLEPRICE', null)
+				->will($this->returnValue($sReturn = uniqid()));
+
+
+			$this->assertSame(
+				$sReturn, $this->oFixture->isPriceOnDetailsPageAllowed(new oxArticle()), 'method value not returned.'
+			);
+		} // function
+
+		/**
 		 * Checks if the basket from the session is used without a parameter.
 		 * @author blange <code@wbl-konzept.de>
 		 * @return void
@@ -608,10 +633,10 @@
 		 * @author blange <code@wbl-konzept.de>
 		 * @return void
 		 */
-		public function testLoadECommerceViewsProductWithCat() {
+		public function testLoadECommerceViewsProductWithCatAndPrice() {
 			$this->oFixture = $this->getMock(
 				get_class($this->getProxyClass(get_class($this->oFixture))),
-				array('addCall', 'getCatString', 'getView')
+				array('addCall', 'getCatString', 'getView', 'IsPriceOnDetailsPageAllowed')
 			);
 
 			/* @var $oProduct oxArticle */
@@ -639,6 +664,71 @@
 				->expects($this->once())
 				->method('getView')
 				->will($this->returnValue($oView = $this->getMock('oxubase', array('getProduct'))));
+
+			$this->oFixture
+				->expects($this->once())
+				->method('IsPriceOnDetailsPageAllowed')
+				->with($oProduct)
+				->will($this->returnValue(true));
+
+			$oView
+				->expects($this->once())
+				->method('getProduct')
+				->will($this->returnValue($oProduct));
+			unset($oProduct);
+
+			/* @var $oView oxUBase */
+			$oView->setActiveCategory($oCat);
+			unset($oCat, $oView);
+
+			$this->oFixture->withDefaultArticle(true);
+			$this->oFixture->withDefaultCat(false);
+
+			$this->assertSame($this->oFixture, $this->oFixture->loadECommerceViews());
+		} // function
+
+		/**
+		 * Checks if a details page is tracked correctly.
+		 * @author blange <code@wbl-konzept.de>
+		 * @return void
+		 */
+		public function testLoadECommerceViewsProductWithCatPriceNotAllowed() {
+			$this->oFixture = $this->getMock(
+				get_class($this->getProxyClass(get_class($this->oFixture))),
+				array('addCall', 'getCatString', 'getView', 'IsPriceOnDetailsPageAllowed')
+			);
+
+			/* @var $oProduct oxArticle */
+			$oProduct = oxNew('oxarticle');
+			$oProduct->oxarticles__oxartnum = new oxField($sArtNum = uniqid());
+			$oProduct->oxarticles__oxtitle  = new oxField($sTitle = uniqid());
+			$oProduct->setPrice($oPrice = oxNew('oxprice'));
+
+			$oPrice->setBruttoPriceMode();
+			$oPrice->setPrice($fPrice = 123.99);
+			unset($oPrice);
+
+			$this->oFixture
+				->expects($this->once())
+				->method('addCall')
+				->with(array('setEcommerceView', $sArtNum, $sTitle, $aData = array(uniqid())));
+
+			$this->oFixture
+				->expects($this->once())
+				->method('getCatString')
+				->with($oCat = oxNew('oxcategory'))
+				->will($this->returnValue($aData));
+
+			$this->oFixture
+				->expects($this->once())
+				->method('getView')
+				->will($this->returnValue($oView = $this->getMock('oxubase', array('getProduct'))));
+
+			$this->oFixture
+				->expects($this->once())
+				->method('IsPriceOnDetailsPageAllowed')
+				->with($oProduct)
+				->will($this->returnValue(false));
 
 			$oView
 				->expects($this->once())
@@ -675,7 +765,7 @@
 			$this->oFixture
 				->expects($this->once())
 				->method('addCall')
-				->with(array('setEcommerceView', $sArtNum, $sTitle, array(), null));
+				->with(array('setEcommerceView', $sArtNum, $sTitle, array()));
 
 			$this->oFixture
 				->expects($this->once())

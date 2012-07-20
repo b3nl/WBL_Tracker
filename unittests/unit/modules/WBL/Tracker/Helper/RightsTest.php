@@ -1,27 +1,27 @@
 <?php
 	/**
-	 * ./unit/modules/WBL/Tracker/Conditions/Value/SimpleReturnTest.php
+	 * ./unit/modules/WBL/Tracker/Helper/RightsTest.php
 	 * @author blange <b.lange@wbl-konzept.de>
 	 * @category unittests
 	 * @package WBL_Tracker
-	 * @subpackage Conditions_Value
+	 * @subpackage Helper
 	 * @version $id$
 	 */
 
-		require_once realpath(dirname(__FILE__) . '/../../../TestCase.php');
+	require_once realpath(dirname(__FILE__) . '/../../TestCase.php');
 
 	/**
-	 * Testing of WBL_Tracker_Conditions_Value_SimpleReturn.
+	 * Testing of WBL_Tracker_Helper_Rights.
 	 * @author blange <b.lange@wbl-konzept.de>
 	 * @category unittests
 	 * @package WBL_Tracker
-	 * @subpackage Conditions_Value
+	 * @subpackage Helper
 	 * @version $id$
 	 */
-	class WBL_Tracker_Conditions_Value_SimpleReturnTest extends WBL_TestCase {
+	class WBL_Tracker_Helper_RightsTest extends WBL_TestCase {
 		/**
 		 * The fixture.
-		 * @var WBL_Tracker_Conditions_Value_SimpleReturn
+		 * @var WBL_Tracker_Helper_Rights
 		 */
 		protected $oFixture = null;
 
@@ -32,9 +32,9 @@
 		public function getGetterAndGetterRules() {
 			return array(
 				array(
-					'getValue',
-					'setParameterValue',
-					null,
+					'getCheckTemplate',
+					'setCheckTemplate',
+					realpath(getShopBasePath() . '/modules/WBL/Tracker/Helper/_files/rights.tpl'),
 					array($sReturn = uniqid()),
 					$sReturn
 				)
@@ -48,7 +48,7 @@
 		public function setUp() {
 			parent::setUp();
 
-			$this->oFixture = new WBL_Tracker_Conditions_Value_SimpleReturn();
+			$this->oFixture = new WBL_Tracker_Helper_Rights();
 		} // function
 
 		/**
@@ -62,12 +62,24 @@
 		} // function
 
 		/**
-		 * Checks the type.
+		 * Checks if true is returned every time on a ce.
 		 * @author blange <code@wbl-konzept.de>
 		 * @return void
 		 */
-		public function testType() {
-			$this->assertType('WBL_Tracker_Conditions_Interface', $this->oFixture);
-			$this->assertType('WBL_Tracker_Conditions_Value_Interface', $this->oFixture);
+		public function testHasRightsDefaultOnCE() {
+			if (class_exists('oxRights')) {
+				return $this->markTestSkipped('No CE.');
+			} // if
+
+			$this->assertTrue($this->oFixture->hasRight(uniqid()));
+		} // function
+
+		/**
+		 * Checks the return type of the method.
+		 * @author blange <code@wbl-konzept.de>
+		 * @return void
+		 */
+		public function testHasRightsReturn() {
+			$this->assertType('bool', $this->oFixture->hasRight(uniqid()));
 		} // function
 	} // class

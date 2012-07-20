@@ -14,8 +14,8 @@
 	 * Testing of WBL_Tracker_Conditions_Value_OrderPayment.
 	 * @author blange <b.lange@wbl-konzept.de>
 	 * @category unittests
-	 * @package WBL_Conditions_Value
-	 * @subpackage Piwik
+	 * @package WBL_Tracker
+	 * @subpackage Conditions_Value
 	 * @version $id$
 	 */
 	class WBL_Tracker_Conditions_Value_OrderPaymentTest extends WBL_TestCase {

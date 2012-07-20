@@ -225,6 +225,16 @@
 		} // function
 
 		/**
+		 * Returns true if the user is allowed to see the price.
+		 * @author blange <code@wbl-konzept.de>
+		 * @param oxArticle $oArticle
+		 * @return bool
+		 */
+		protected function isPriceOnDetailsPageAllowed(oxArticle $oArticle) {
+			return wblNew('WBL_Tracker_Helper_Rights')->hasRight('SHOWARTICLEPRICE', $this->getSmarty());
+		} // function
+
+		/**
 		 * Adds the basket data to the piwik call.
 		 * @author blange <code@wbl-konzept.de>
 		 * @param  WBL_Tracker_Basket $oBasket
@@ -283,15 +293,19 @@
 
 				/* @var $oProduct oxArticle */
 				if ($bWithArticle && $oProduct = $oView->getProduct()) {
-					$oPrice = $oProduct->getPrice();
-
-					$this->addCall(array(
+					$aValues = array(
 						'setEcommerceView',
 						$oProduct->oxarticles__oxartnum->value,
 						$oProduct->oxarticles__oxtitle->value,
-						$aCat,
-						$oPrice ? $oPrice->getBruttoPrice() : null
-					));
+						$aCat
+					);
+
+					if (($oPrice = $oProduct->getPrice()) && $this->isPriceOnDetailsPageAllowed($oProduct)) {
+						$aValues[] = $oPrice->getBruttoPrice();
+					} // if
+					unset($oPrice);
+
+					$this->addCall($aValues);
 				} elseif ($aCat) {
 					$this->addCall(array('setEcommerceView', false, false, $aCat));
 				} // else

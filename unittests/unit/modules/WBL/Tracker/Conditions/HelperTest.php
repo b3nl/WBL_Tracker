@@ -16,8 +16,8 @@
 	 * Testing of WBL_Tracker_Conditions_Helper.
 	 * @author blange <b.lange@wbl-konzept.de>
 	 * @category unittests
-	 * @package WBL_Conditions
-	 * @subpackage Piwik
+	 * @package WBL_Tracker
+	 * @subpackage Conditions
 	 * @version $id$
 	 */
 	class WBL_Tracker_Conditions_HelperTest extends WBL_TestCase {
