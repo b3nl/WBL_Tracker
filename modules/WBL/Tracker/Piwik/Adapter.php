@@ -287,9 +287,11 @@
 
 			if ($oView) {
 				$bWithArticle = $this->withDefaultArticle();
-				$aCat         = (($this->withDefaultCat() || $bWithArticle) && $oCat = $oView->getActiveCategory())
-					? $this->getCatString($oCat)
-					: array();
+				$aCat         = array();
+
+				if (($this->withDefaultCat() || $bWithArticle) && (($oCat = $oView->getActiveCategory()) instanceof oxCategory)) {
+					$aCat = $this->getCatString($oCat);
+				} // if
 
 				/* @var $oProduct oxArticle */
 				if ($bWithArticle && $oProduct = $oView->getProduct()) {
