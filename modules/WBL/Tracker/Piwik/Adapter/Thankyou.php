@@ -25,31 +25,31 @@
 			parent::init();
 
 			/* @var $oView Thankyou */
-			if (!(($oView = $this->getView()) instanceof Thankyou)) {
-				return $this;
+			if ((($oView = $this->getView()) instanceof Thankyou)) {
+				$this->loadBasket($oBasket = $oView->getBasket());
+				$fVat   = 0;
+				$oOrder = $oView->getOrder();
+
+				foreach ($oBasket->getProductVats(false) as $iId => $fVatPosSum) {
+					$fVat += $fVatPosSum;
+				} // foreach
+
+				$aValues = array(
+					'trackEcommerceOrder',
+					$this->getConfig()->getShopId() . '_' . $oOrder->oxorder__oxordernr->value,
+					$oOrder->oxorder__oxtotalordersum->value,
+					$oOrder->oxorder__oxtotalnetsum->value,
+					$fVat,
+					$oOrder->oxorder__oxdelcost->value
+				);
+
+				$aValues[] = ($fDisc = $oOrder->oxorder__oxdiscount->value + $oOrder->oxorder__oxvoucherdiscount->value)
+					? $fDisc
+					: false;
+
+				$this->addCall($aValues);
 			} // if
 
-			$this->loadBasket($oBasket = $oView->getBasket());
-			$fVat   = 0;
-			$oOrder = $oView->getOrder();
-
-			foreach ($oBasket->getProductVats(false) as $iId => $fVatPosSum) {
-				$fVat += $fVatPosSum;
-			} // foreach
-
-			$aValues = array(
-				'trackEcommerceOrder',
-				$this->getConfig()->getShopId() . '_' . $oOrder->oxorder__oxordernr->value,
-				$oOrder->oxorder__oxtotalordersum->value,
-				$oOrder->oxorder__oxtotalnetsum->value,
-				$fVat,
-				$oOrder->oxorder__oxdelcost->value
-			);
-
-			$aValues[] = ($fDisc = $oOrder->oxorder__oxdiscount->value + $oOrder->oxorder__oxvoucherdiscount->value)
-				? $fDisc
-				: false;
-
-			return $this->addCall($aValues);
+			return $this;
 		} // function
 	} // class

@@ -20,6 +20,12 @@
 		WBL_Tracker_Adapter_Interface
 	{
 		/**
+		 * The array for calls to the tracker class. The key or the first parameter could be the method name of the tracker.
+		 * @var array
+		 */
+		protected $aTrackerCalls = array();
+
+		/**
 		 * The used view data.
 		 * @var array
 		 */
@@ -50,12 +56,56 @@
 		protected $bIsXHTML = true;
 
 		/**
+		 * Adds a call for the tracker class.
+		 * @author blange <code@wbl-konzept.de>
+		 * @param  array  $aCallData    The data for the tracker call.
+		 * @param  bool   $bWithParsing Should a helper parse the php values to javascript parts?
+		 * @param  string $sKey         A Special key for this call, maybe the method name.
+		 * @return WBL_Tracker_Piwik_Adapter_Standard
+		 */
+		public function addTrackerCall(array $aCallData, $bWithParsing = true, $sKey = '') {
+			$this->aTrackerCalls[$sKey ? $sKey : count($this->aTrackerCalls) - 1] = $bWithParsing
+				? wblNew('WBL_Tracker_Helper')->parseValueToJSPart($aCallData)
+				: '[' . implode(',', $aCallData) . ']';
+
+			return $this;
+		} // function
+
+		/**
+		 * Returns the category breadcrumb starting with the deepest used child.
+		 * @author blange <code@wbl-konzept.de>
+		 * @param oxCategory $oCat
+		 * @return array
+		 */
+		protected function getCatString(oxCategory $oCat) {
+			$aData = array();
+
+			if ($aTree = wblNew('WBL_Tracker_Helper')->getCategoryTree($oCat)) {
+				/* @var $oCat oxCategory */
+				foreach ($aTree as $sCatId => $oCat) {
+					$aData[] = $oCat->oxcategories__oxtitle->value;
+				} // foreach
+			} // if
+
+			return $aData;
+		} // function
+
+		/**
 		 * Returns the used smarty instance or null.
 		 * @author blange <code@wbl-konzept.de>
 		 * @return Smarty
 		 */
 		protected function getSmarty() {
 			return $this->_oSmarty;
+		} // function
+
+		/**
+		 * Returns the array with the tracker calls.
+		 * @author blange <code@wbl-konzept.de>
+		 * @return array
+		 */
+		public function getTrackerCalls() {
+			return $this->aTrackerCalls;
 		} // function
 
 		/**

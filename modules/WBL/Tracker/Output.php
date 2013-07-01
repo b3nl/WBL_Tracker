@@ -38,12 +38,12 @@
 		 * @see http/core/oxOutput::process()
 		 */
 		public function process($sValue, $sClassName) {
-			$sParent = parent::process($sValue, $sClassName);
+			$sReturn = parent::process($sValue, $sClassName);
 
-			if (!((!$this->getConfig()->isAdmin()) &&
+			if (!((strpos($sClassName, 'oxw') !== 0) && (!$this->getConfig()->isAdmin()) &&
 				($aAdapters = WBL_Tracker_Adapter_Loader::getInstance()->getAdaptersForClass($sClassName))))
 			{
-				return $sParent;
+				return $sReturn;
 			} // if
 
 			$oStr          = getStr();
@@ -58,7 +58,7 @@
 				);
 			} // if
 
-			return $sParent . $sTrackerCodes;
+			return (strtolower($sClassName) === 'oxemail') ? $sReturn : ($sReturn . $sTrackerCodes);
 		} // function
 
 		/**

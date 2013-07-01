@@ -73,9 +73,9 @@
 			if (($oView = $this->getConfig()->getActiveView()) instanceof oxUBase) {
 				$sCatId = '';
 
-				if ($oCat = $oView->getActCategory()) {
+				if (($oCat = $oView->getActCategory()) instanceof oxBase) {
 					$sCatId = $oCat->getId();
-				} elseif ($oCat = $oView->getActiveCategory()) {
+				} elseif (($oCat = $oView->getActiveCategory()) instanceof oxBase) {
 					$sCatId = $oCat->getId();
 				} else {
 					$sCatId = $oView->getCategoryId();

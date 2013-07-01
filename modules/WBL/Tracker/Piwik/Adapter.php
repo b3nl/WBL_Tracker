@@ -18,12 +18,6 @@
 	 */
 	class WBL_Tracker_Piwik_Adapter extends WBL_Tracker_Adapter_Abstract {
 		/**
-		 * The array for the piwik _paq calls.
-		 * @var array
-		 */
-		protected $aCalls = array();
-
-		/**
 		 * Can the tracker use the default api to get the article.
 		 * @var bool
 		 */
@@ -85,11 +79,7 @@
 		 * @return WBL_Tracker_Piwik_Adapter_Standard
 		 */
 		public function addCall(array $aCallData, $bWithParsing = true) {
-			$this->aCalls[] = $bWithParsing
-				? wblNew('WBL_Tracker_Helper')->parseValueToJSPart($aCallData)
-				: '[' . implode(',', $aCallData) . ']';
-
-			return $this;
+			return $this->addTrackerCall($aCallData, $bWithParsing);
 		} // function
 
 		/**
@@ -129,26 +119,7 @@
 		 * @return array
 		 */
 		public function getCalls() {
-			return $this->aCalls;
-		} // function
-
-		/**
-		 * Returns the category breadcrumb starting with the deepest used child.
-		 * @author blange <code@wbl-konzept.de>
-		 * @param oxCategory $oCat
-		 * @return array
-		 */
-		protected function getCatString(oxCategory $oCat) {
-			$aData = array();
-
-			if ($aTree = wblNew('WBL_Tracker_Helper')->getCategoryTree($oCat)) {
-				/* @var $oCat oxCategory */
-				foreach ($aTree as $sCatId => $oCat) {
-					$aData[] = $oCat->oxcategories__oxtitle->value;
-				} // foreach
-			} // if
-
-			return $aData;
+			return $this->getTrackerCalls();
 		} // function
 
 		/**

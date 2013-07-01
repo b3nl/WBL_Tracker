@@ -78,6 +78,12 @@
 		const DEFAULT_NAMESPACE = 'WBL_Tracker';
 
 		/**
+		 * The alias used as vendor id, if the vendor name is too long.
+		 * @var string
+		 */
+		const TRACKER_CONFIG_KEY_ID_ALIAS = 'alias';
+
+		/**
 		 * Config-Key for the tracker adapter file extension.
 		 * @var string
 		 */
@@ -149,7 +155,11 @@
 				$sStandardKey = self::TRACKER_CONFIG_KEY_STANDARD_ADAPTER;
 
 				foreach ($aConfig as $sVendor => $aVendorConfig) {
-					if ($oConfig->getConfigParam('bIsWBLTracker' . $sVendor .'Active')) {
+					$sActiveVendorKey = ($sAlias = $aVendorConfig[self::TRACKER_CONFIG_KEY_ID_ALIAS])
+						? $sAlias
+						: $sVendor;
+
+					if ($oConfig->getConfigParam('bIsWBLTracker' . $sActiveVendorKey .'Active')) {
 						/* @var $oTracker WBL_Tracker_Adapter_Interface */
 						$oTracker = null;
 
@@ -205,9 +215,14 @@
 
 			if ($aConfig = $this->getTrackerConfigs()) {
 				foreach ($aConfig as $sVendor => $aVendorConfig) {
+					$sActiveVendorKey = ($sAlias = $aVendorConfig[self::TRACKER_CONFIG_KEY_ID_ALIAS])
+						? $sAlias
+						: $sVendor;
+
+
 					$aExtend[] = array(
 						'group' => 'WBL_Tracker_' . $sVendor,
-						'name'  => "bIsWBLTracker{$sVendor}Active",
+						'name'  => "bIsWBLTracker{$sActiveVendorKey}Active",
 						'type'  => 'bool',
 						'value' => false
 					);
@@ -280,7 +295,6 @@
 				$aConfig    = array(self::TRACKER_CONFIG_KEY_FILES => array());
 				$bDefNameS  = true;
 				$sFileExt   = ($sTemp = @$aConfigFromFile[self::TRACKER_CONFIG_KEY_FILE_EXTENSION]) ? $sTemp : self::DEFAULT_FILE_ENDING;
-				$sNameSep   = strpos($sNamespace, '\\') !== false ? '\\' : '_';
 				$sNamespace = self::DEFAULT_NAMESPACE;
 				$sVendorDir = dirname($sMetaFile);
 				$sSep       = DIRECTORY_SEPARATOR;
@@ -291,22 +305,27 @@
 					$sNamespace = $sTemp;
 				} // if
 
-				$oIt = new RegexIterator(
-					new RecursiveIteratorIterator(
-						new RecursiveDirectoryIterator($sAdapterDir = $sVendorDir . $sSep . $sStandard . $sSep)
-					),
-					'/^.+(\.' . $sFileExt . ')$/i',
-					RecursiveRegexIterator::GET_MATCH
-				);
+				$sNameSep = strpos($sNamespace, '\\') !== false ? '\\' : '_';
 
-				foreach ($oIt as $aFile) {
-					$sFile      = reset($aFile);
-					$sClass     = str_replace('.' . $sFileExt, '', str_replace($sAdapterDir, '', $sFile));
+				if (is_readable($sAdapterDir = $sVendorDir . $sSep . $sStandard . $sSep))
+				{
+					$oIt = new RegexIterator(
+						new RecursiveIteratorIterator(
+							new RecursiveDirectoryIterator($sAdapterDir)
+						),
+						'/^.+(\.' . $sFileExt . ')$/i',
+						RecursiveRegexIterator::GET_MATCH
+					);
 
-					$aConfig[self::TRACKER_CONFIG_KEY_FILES][strtolower(str_replace($sSep, '_', $sClass))] =
-						$sNamespace . $sNameSep . $sVendor .  $sNameSep . $sStandard . $sNameSep .
-							str_replace($sSep, $sNameSep, $sClass);
-				} // foreach
+					foreach ($oIt as $aFile) {
+						$sFile      = reset($aFile);
+						$sClass     = str_replace('.' . $sFileExt, '', str_replace($sAdapterDir, '', $sFile));
+
+						$aConfig[self::TRACKER_CONFIG_KEY_FILES][strtolower(str_replace($sSep, '_', $sClass))] =
+							$sNamespace . $sNameSep . $sVendor .  $sNameSep . $sStandard . $sNameSep .
+								str_replace($sSep, $sNameSep, $sClass);
+					} // foreach
+				} // if
 
 				if (is_readable($sVendorDir . $sSep . $sStandard . ".{$sFileExt}")) {
 					$aConfig[self::TRACKER_CONFIG_KEY_STANDARD_ADAPTER] =
@@ -317,6 +336,8 @@
 				$aConfig['settings'] = ($aConfigFromFile['settings'] && is_array($aConfigFromFile['settings']))
 					? $aConfigFromFile['settings']
 					: array();
+
+@				$aConfig['alias'] = (string) $aConfigFromFile[self::TRACKER_CONFIG_KEY_ID_ALIAS];
 			} // if
 
 			return $aConfig;
