@@ -223,7 +223,8 @@
 						$oArticle = $oItem->getArticle(false);
 						$oPrice   = $oItem->getPrice();
 						$this->addCall(array(
-							'addEcommerceItem', $oArticle->oxarticles__oxartnum->value,
+							'addEcommerceItem',
+							$oArticle->oxarticles__oxartnum->value ?: $oArticle->getId(),
 							$oArticle->oxarticles__oxtitle->value,
 								($oItem instanceof WBL_Tracker_Basket_Item && ($oCat = $oItem->getUsedWBLCategory()))
 									? $this->getCatString($oCat)
@@ -268,7 +269,7 @@
 				if ($bWithArticle && $oProduct = $oView->getProduct()) {
 					$aValues = array(
 						'setEcommerceView',
-						$oProduct->oxarticles__oxartnum->value,
+						$oProduct->oxarticles__oxartnum->value ?: $oProduct->getId(),
 						$oProduct->oxarticles__oxtitle->value,
 						$aCat
 					);
