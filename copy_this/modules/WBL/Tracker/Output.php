@@ -57,9 +57,7 @@
                         $sTrackerCodes . $sSearch,
                         $sValue
                     );
-                } elseif (strtolower($sClassName) === 'oxemail') {
-                    $sReturn = ($sReturn . $sTrackerCodes);
-                } // elseif
+                } // if
             } // if
 
             return $sReturn;
